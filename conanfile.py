@@ -6,15 +6,14 @@ class ConanRecipe(ConanFile):
     name = "portaudio"
     version = "v190600.20161030"
     settings = "os", "compiler", "build_type", "arch"
-    FOLDER_NAME = "portaudio"
+    generators = ["cmake", "txt"]
+    sources_folder = "sources"
     description = "Conan package for the Portaudio library"
     url = "https://github.com/jgsogo/conan-portaudio"
     license = "http://www.portaudio.com/license.html"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = "shared=False", "fPIC=True"
-    exports = ["FindPortaudio.cmake",]
-
-    WIN = {'build_dirname': "_build"}
+    exports = ["FindPortaudio.cmake", "CMakeLists.txt"]
 
     def configure(self):
         del self.settings.compiler.libcxx
@@ -35,23 +34,24 @@ class ConanRecipe(ConanFile):
     def source(self):
         zip_name = 'portaudio_%s' % self.version
         if self.version == 'master':
-            self.run('mkdir portaudio')
+            self.run('mkdir %s' % self.sources_folder)
             zip_name += '.zip'
-            download('https://app.assembla.com/spaces/portaudio/git/source/master?_format=zip', 'portaudio/%s' % zip_name)
-            unzip('portaudio/%s' % zip_name, 'portaudio/')
-            os.unlink('portaudio/%s' % zip_name)
+            download('https://app.assembla.com/spaces/portaudio/git/source/master?_format=zip', '%s/%s' % (self.sources_folder, zip_name))
+            unzip('%s/%s' % (self.sources_folder, zip_name), '%s/' % self.sources_folder)
+            os.unlink('%s/%s' % (self.sources_folder, zip_name))
         else:
             zip_name += '.tgz'
             download('http://portaudio.com/archives/pa_stable_%s.tgz' % self.version.replace('.','_'), zip_name)
             untargz(zip_name)
             os.unlink(zip_name)
+            os.rename("portaudio", self.sources_folder)
 
         if self.settings.os != "Windows":
-            self.run("chmod +x ./%s/configure" % self.FOLDER_NAME)
+            self.run("chmod +x ./%s/configure" % self.sources_folder)
 
-    def build(self):
+    def patch_source(self):
         if self.settings.os == "Macos":
-            replace_in_file(os.path.join(self.FOLDER_NAME, "configure"), 'mac_sysroot="-isysroot `xcodebuild -version -sdk macosx10.12 Path`"',
+            replace_in_file(os.path.join(self.sources_folder, "configure"), 'mac_sysroot="-isysroot `xcodebuild -version -sdk macosx10.12 Path`"',
 """
 mac_sysroot="-isysroot `xcodebuild -version -sdk macosx10.12 Path`"
 elif xcodebuild -version -sdk macosx10.13 Path >/dev/null 2>&1 ; then
@@ -60,7 +60,15 @@ elif xcodebuild -version -sdk macosx10.13 Path >/dev/null 2>&1 ; then
 
 """
                         )
-            replace_in_file(os.path.join(self.FOLDER_NAME, "configure"), "Could not find 10.5 to 10.12 SDK.", "Could not find 10.5 to 10.13 SDK.")
+            replace_in_file(os.path.join(self.sources_folder, "configure"), "Could not find 10.5 to 10.12 SDK.", "Could not find 10.5 to 10.13 SDK.")
+        elif self.settings.os == "Windows" and self.settings.compiler == "gcc":
+            replace_in_file(os.path.join(self.sources_folder, "CMakeLists.txt"), 'OPTION(PA_USE_WDMKS "Enable support for WDMKS" ON)', 'OPTION(PA_USE_WDMKS "Enable support for WDMKS" OFF)')
+            replace_in_file(os.path.join(self.sources_folder, "CMakeLists.txt"), 'OPTION(PA_USE_WDMKS_DEVICE_INFO "Use WDM/KS API for device info" ON)', 'OPTION(PA_USE_WDMKS_DEVICE_INFO "Use WDM/KS API for device info" OFF)')
+            replace_in_file(os.path.join(self.sources_folder, "CMakeLists.txt"), 'OPTION(PA_USE_WASAPI "Enable support for WASAPI" ON)', 'OPTION(PA_USE_WASAPI "Enable support for WASAPI" OFF)')
+        
+
+    def build(self):
+        self.patch_source()
         
         if self.settings.os == "Linux" or self.settings.os == "Macos":
             env = AutoToolsBuildEnvironment(self)
@@ -68,44 +76,25 @@ elif xcodebuild -version -sdk macosx10.13 Path >/dev/null 2>&1 ; then
                 env.fpic = self.options.fPIC
                 with tools.environment_append(env.vars):
                     command = './configure && make'
-                    self.run("cd %s && %s" % (self.FOLDER_NAME, command))
+                    self.run("cd %s && %s" % (self.sources_folder, command))
             if self.settings.os == "Macos" and self.options.shared:
-                self.run('cd portaudio/lib/.libs && for filename in *.dylib; do install_name_tool -id $filename $filename; done')
+                self.run('cd %s/lib/.libs && for filename in *.dylib; do install_name_tool -id $filename $filename; done' % self.sources_folder)
         else:
-            if self.settings.compiler == "gcc":
-                replace_in_file(os.path.join(self.FOLDER_NAME, "CMakeLists.txt"), 'OPTION(PA_USE_WDMKS "Enable support for WDMKS" ON)', 'OPTION(PA_USE_WDMKS "Enable support for WDMKS" OFF)')
-                replace_in_file(os.path.join(self.FOLDER_NAME, "CMakeLists.txt"), 'OPTION(PA_USE_WDMKS_DEVICE_INFO "Use WDM/KS API for device info" ON)', 'OPTION(PA_USE_WDMKS_DEVICE_INFO "Use WDM/KS API for device info" OFF)')
-                replace_in_file(os.path.join(self.FOLDER_NAME, "CMakeLists.txt"), 'OPTION(PA_USE_WASAPI "Enable support for WASAPI" ON)', 'OPTION(PA_USE_WASAPI "Enable support for WASAPI" OFF)')
-
-            build_dirname = self.WIN['build_dirname']
-
             cmake = CMake(self)
-
-            if self.settings.os == "Windows":
-                self.run("IF not exist {} mkdir {}".format(build_dirname, build_dirname))
-            else:
-                self.run("mkdir {}".format(build_dirname))
-
-            cmake_command = 'cd {} && cmake {} {}'.format(build_dirname, os.path.join("..", self.FOLDER_NAME), cmake.command_line)
-            self.output.info(cmake_command)
-            self.run(cmake_command)
-
-            build_command = "cd {} && cmake --build . {}".format(build_dirname, cmake.build_config)
-            self.output.info(build_command)
-            self.run(build_command)
+            cmake.configure()
+            cmake.build()
 
     def package(self):
         self.copy("FindPortaudio.cmake", ".", ".")
-        self.copy("*.h", dst="include", src=os.path.join(self.FOLDER_NAME, "include"))
-
-        self.copy(pattern="LICENSE*", dst="licenses", src=self.FOLDER_NAME,  ignore_case=True, keep_path=False)
+        self.copy("*.h", dst="include", src=os.path.join(self.sources_folder, "include"))
+        self.copy(pattern="LICENSE*", dst="licenses", src=self.sources_folder,  ignore_case=True, keep_path=False)
         
         if self.settings.os == "Windows":
-            build_dirname = self.WIN['build_dirname']
             if self.settings.compiler == "Visual Studio":
-                self.copy("*.lib", dst="lib", src=os.path.join(build_dirname, str(self.settings.build_type)))
+                self.copy(pattern="*.lib", dst="lib", keep_path=False)
                 if self.options.shared:
-                    self.copy("*.dll", dst="bin", src=os.path.join(build_dirname, str(self.settings.build_type)))
+                    self.copy(pattern="*.dll", dst="bin", keep_path=False)
+                self.copy(pattern="*.pdb", dst="bin", keep_path=False)
             else:
                 if self.options.shared:
                     self.copy(pattern="*.dll.a", dst="lib", keep_path=False)
@@ -116,11 +105,11 @@ elif xcodebuild -version -sdk macosx10.13 Path >/dev/null 2>&1 ; then
         else:
             if self.options.shared:
                 if self.settings.os == "Macos":
-                    self.copy(pattern="*.dylib", dst="lib", src=os.path.join(self.FOLDER_NAME, "lib", ".libs"))
+                    self.copy(pattern="*.dylib", dst="lib", src=os.path.join(self.sources_folder, "lib", ".libs"))
                 else:
-                    self.copy(pattern="*.so*", dst="lib", src=os.path.join(self.FOLDER_NAME, "lib", ".libs"))
+                    self.copy(pattern="*.so*", dst="lib", src=os.path.join(self.sources_folder, "lib", ".libs"))
             else:
-                self.copy("*.a", dst="lib", src=os.path.join(self.FOLDER_NAME, "lib", ".libs"))
+                self.copy("*.a", dst="lib", src=os.path.join(self.sources_folder, "lib", ".libs"))
 
 
     def package_info(self):
