@@ -1,22 +1,25 @@
-from conans import ConanFile, CMake
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from conans import ConanFile, CMake, tools, RunEnvironment
 import os
 
-class TestPortaudio(ConanFile):
+
+class TestPackageConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
 
     def build(self):
         cmake = CMake(self)
-        self.run('cmake "%s" %s' % (self.conanfile_directory, cmake.command_line))
-        self.run("cmake --build . %s" % cmake.build_config)
+        cmake.configure()
+        cmake.build()
 
     def test(self):
-        # equal to ./bin/portaudio_conan_test, but portable win: .\bin\portaudio_conan_test
-        self.run(os.sep.join(["cd bin && .", "portaudio_conan_test"]))
-
-    def imports(self):
-        if self.settings.os == "Windows":
-            self.copy(pattern="*.dll", dst="bin", src="bin")
-            self.copy(pattern="*.pdb", dst="bin", src="bin")
-	if self.settings.os == "Macos":
-            self.copy(pattern="*.dylib", dst="bin", src="lib")
+        with tools.environment_append(RunEnvironment(self).vars):
+            bin_path = os.path.join("bin", "test_package")
+            if self.settings.os == "Windows":
+                self.run(bin_path)
+            elif self.settings.os == "Macos":
+                self.run("DYLD_LIBRARY_PATH=%s %s" % (os.environ.get('DYLD_LIBRARY_PATH', ''), bin_path))
+            else:
+                self.run("LD_LIBRARY_PATH=%s %s" % (os.environ.get('LD_LIBRARY_PATH', ''), bin_path))

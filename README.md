@@ -1,74 +1,50 @@
+[ ![Download](https://api.bintray.com/packages/bincrafters/public-conan/portaudio%3Abincrafters/images/download.svg) ](https://bintray.com/bincrafters/public-conan/portaudio%3Abincrafters/_latestVersion)
+[![Build Status](https://travis-ci.org/bincrafters/conan-portaudio.svg?branch=stable%2Fv190600.20161030)](https://travis-ci.org/bincrafters/conan-portaudio)
+[![Build status](https://ci.appveyor.com/api/projects/status/sxs9n6vb8nqa92l5?svg=true)](https://ci.appveyor.com/project/BinCrafters/conan-portaudio)
 
-# conan-portaudio
+[Conan.io](https://conan.io) package for [portaudio](http://www.portaudio.com/) project
 
-[Conan](https://conan.io) package for [portaudio](http://www.portaudio.com/).
+The packages generated with this **conanfile** can be found in [Bintray](https://bintray.com/bincrafters/public-conan/portaudio%3Abincrafters).
 
-The packages generated with this **conanfile** can be found in [bintray](https://bintray.com/jgsogo/conan-packages/portaudio%3Ajgsogo).
-In order to be able to compile the project you have to add it to your conan remotes:
+## For Users: Use this package
 
-```bash
-$> conan remote add jgsogo-conan-packages https://api.bintray.com/conan/jgsogo/conan-packages
-```
+### Basic setup
 
-## Build status
+    $ conan install portaudio/v190600.20161030@bincrafters/stable
 
- * `master` branch (package version) use last revision from the Portaudio repository.
- * `v19.20140130` branch (package version) use version v19.20140130 of Portaudio.
- * `v190600.20161030` branch (package version) use version v190600.20161030 of Portaudio.
- 
- 
-<table>
-    <thead>
-        <tr>
-            <th></th>
-            <th colspan="3">Windows</th>
-            <th colspan="4">Unix</th>
-            <th>Macos</th>
-        </tr>
-    </thead>
-    <tr>
-        <td></td>
-        <td>msvc 12</td>
-        <td>msvc 14</td>
-        <td>msvc 15</td>
-        <td>gcc 4.9</td>
-        <td>gcc 5.4</td>
-        <td>gcc 6.3</td>
-        <td>clang 4.0</td>
-        <td>apple-clang 8.1</td>
-    </tr>
-    <tr>
-        <td>master</td>
-        <td><a href="https://ci.appveyor.com/project/jgsogo/conan-portaudio"><img src="https://appveyor-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branch/master/1" alt="Build status"/></a></td>        
-        <td><a href="https://ci.appveyor.com/project/jgsogo/conan-portaudio"><img src="https://appveyor-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branch/master/2" alt="Build status"/></a></td>        
-        <td><a href="https://ci.appveyor.com/project/jgsogo/conan-portaudio"><img src="https://appveyor-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branch/master/3" alt="Build status"/></a></td>        
-        <td><a href="https://travis-ci.org/jgsogo/conan-portaudio"><img src="https://travis-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branches/master/1" alt="Build status"/></a></td>
-        <td><a href="https://travis-ci.org/jgsogo/conan-portaudio"><img src="https://travis-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branches/master/2" alt="Build status"/></a></td>
-        <td><a href="https://travis-ci.org/jgsogo/conan-portaudio"><img src="https://travis-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branches/master/3" alt="Build status"/></a></td>
-        <td><a href="https://travis-ci.org/jgsogo/conan-portaudio"><img src="https://travis-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branches/master/4" alt="Build status"/></a></td>
-        <td><a href="https://travis-ci.org/jgsogo/conan-portaudio"><img src="https://travis-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branches/master/5" alt="Build status"/></a></td>
-    </tr>
-    <tr>
-        <td>v19.20140130</td>
-        <td><a href="https://ci.appveyor.com/project/jgsogo/conan-portaudio"><img src="https://appveyor-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branch/v19.20140130/1" alt="Build status"/></a></td>        
-        <td><a href="https://ci.appveyor.com/project/jgsogo/conan-portaudio"><img src="https://appveyor-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branch/v19.20140130/2" alt="Build status"/></a></td>        
-        <td><a href="https://ci.appveyor.com/project/jgsogo/conan-portaudio"><img src="https://appveyor-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branch/v19.20140130/3" alt="Build status"/></a></td>        
-        <td><a href="https://travis-ci.org/jgsogo/conan-portaudio"><img src="https://travis-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branches/v19.20140130/1" alt="Build status"/></a></td>
-        <td><a href="https://travis-ci.org/jgsogo/conan-portaudio"><img src="https://travis-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branches/v19.20140130/2" alt="Build status"/></a></td>
-        <td><a href="https://travis-ci.org/jgsogo/conan-portaudio"><img src="https://travis-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branches/v19.20140130/3" alt="Build status"/></a></td>
-        <td><a href="https://travis-ci.org/jgsogo/conan-portaudio"><img src="https://travis-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branches/v19.20140130/4" alt="Build status"/></a></td>
-        <td><a href="https://travis-ci.org/jgsogo/conan-portaudio"><img src="https://travis-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branches/v19.20140130/5" alt="Build status"/></a></td>
-    </tr>
-    <tr>
-        <td>v190600.20161030</td>
-        <td><a href="https://ci.appveyor.com/project/jgsogo/conan-portaudio"><img src="https://appveyor-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branch/v190600.20161030/1" alt="Build status"/></a></td>        
-        <td><a href="https://ci.appveyor.com/project/jgsogo/conan-portaudio"><img src="https://appveyor-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branch/v190600.20161030/2" alt="Build status"/></a></td>        
-        <td><a href="https://ci.appveyor.com/project/jgsogo/conan-portaudio"><img src="https://appveyor-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branch/v190600.20161030/3" alt="Build status"/></a></td>        
-        <td><a href="https://travis-ci.org/jgsogo/conan-portaudio"><img src="https://travis-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branches/v190600.20161030/1" alt="Build status"/></a></td>
-        <td><a href="https://travis-ci.org/jgsogo/conan-portaudio"><img src="https://travis-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branches/v190600.20161030/2" alt="Build status"/></a></td>
-        <td><a href="https://travis-ci.org/jgsogo/conan-portaudio"><img src="https://travis-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branches/v190600.20161030/3" alt="Build status"/></a></td>
-        <td><a href="https://travis-ci.org/jgsogo/conan-portaudio"><img src="https://travis-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branches/v190600.20161030/4" alt="Build status"/></a></td>
-        <td><a href="https://travis-ci.org/jgsogo/conan-portaudio"><img src="https://travis-matrix-badges.herokuapp.com/repos/jgsogo/conan-portaudio/branches/v190600.20161030/5" alt="Build status"/></a></td>
-    </tr>
-</table>
+### Project setup
 
+If you handle multiple dependencies in your project is better to add a *conanfile.txt*
+
+    [requires]
+    portaudio/v190600.20161030@bincrafters/stable
+
+    [generators]
+    cmake
+
+Complete the installation of requirements for your project running:
+
+    $ mkdir build && cd build && conan install ..
+
+Note: It is recommended that you run conan install from a build directory and not the root of the project directory.  This is because conan generates *conanbuildinfo* files specific to a single build configuration which by default comes from an autodetected default profile located in ~/.conan/profiles/default .  If you pass different build configuration options to conan install, it will generate different *conanbuildinfo* files.  Thus, they should not be added to the root of the project, nor committed to git.
+
+## For Packagers: Publish this Package
+
+The example below shows the commands used to publish to bincrafters conan repository. To publish to your own conan respository (for example, after forking this git repository), you will need to change the commands below accordingly.
+
+## Build and package
+
+The following command both runs all the steps of the conan file, and publishes the package to the local system cache.  This includes downloading dependencies from "build_requires" and "requires" , and then running the build() method.
+
+    $ conan create bincrafters/stable
+
+## Add Remote
+
+    $ conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"
+
+## Upload
+
+    $ conan upload portaudio/v190600.20161030@bincrafters/stable --all -r bincrafters
+
+## License
+[MIT](http://www.portaudio.com/license.html)
