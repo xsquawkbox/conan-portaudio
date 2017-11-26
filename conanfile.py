@@ -24,8 +24,13 @@ class ConanRecipe(ConanFile):
         if os_info.is_linux:
             if os_info.with_apt:
                 installer = SystemPackageTool()
-                installer.install("libasound2-dev")
-                installer.install("libjack-dev")
+                if self.settings.arch == "x86" and tools.detected_architecture() == "x86_64":
+                    arch_suffix = ':i386'
+                    installer.install("g++-multilib")
+                else:
+                    arch_suffix = ''
+                installer.install("%s%s" % ("libasound2-dev", arch_suffix))
+                installer.install("%s%s" % ("libjack-dev", arch_suffix))
             elif os_info.with_yum:
                 installer = SystemPackageTool()
                 installer.install("alsa-lib-devel")
