@@ -33,8 +33,14 @@ class ConanRecipe(ConanFile):
                 installer.install("%s%s" % ("libjack-dev", arch_suffix))
             elif os_info.with_yum:
                 installer = SystemPackageTool()
-                installer.install("alsa-lib-devel")
-                installer.install("jack-audio-connection-kit-devel")
+                if self.settings.arch == "x86" and tools.detected_architecture() == "x86_64":
+                    arch_suffix = '.i686'
+                    installer.install("glibmm24.i686")
+                    installer.install("glibc-devel.i686")
+                else:
+                    arch_suffix = ''
+                installer.install("%s%s" % ("alsa-lib-devel", arch_suffix))
+                installer.install("%s%s" % ("jack-audio-connection-kit-devel", arch_suffix))
 
     def source(self):
         zip_name = 'portaudio_%s' % self.version
