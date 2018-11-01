@@ -68,25 +68,32 @@ mac_sysroot="-isysroot `xcodebuild -version -sdk macosx10.12 Path`"
 elif xcodebuild -version -sdk macosx10.13 Path >/dev/null 2>&1 ; then
                  mac_version_min="-mmacosx-version-min=10.4"
                  mac_sysroot="-isysroot `xcodebuild -version -sdk macosx10.13 Path`"
+elif xcodebuild -version -sdk macosx10.14 Path >/dev/null 2>&1 ; then
+                 mac_version_min="-mmacosx-version-min=10.4"
+                 mac_sysroot="-isysroot `xcodebuild -version -sdk macosx10.14 Path`"
 
 """
                         )
-            replace_in_file(os.path.join(self.sources_folder, "configure"), "Could not find 10.5 to 10.12 SDK.", "Could not find 10.5 to 10.13 SDK.")
+            replace_in_file(os.path.join(self.sources_folder, "configure"), "Could not find 10.5 to 10.12 SDK.", "Could not find 10.5 to 10.14 SDK.")
         elif self.settings.os == "Windows" and self.settings.compiler == "gcc":
             replace_in_file(os.path.join(self.sources_folder, "CMakeLists.txt"), 'OPTION(PA_USE_WDMKS "Enable support for WDMKS" ON)', 'OPTION(PA_USE_WDMKS "Enable support for WDMKS" OFF)')
             replace_in_file(os.path.join(self.sources_folder, "CMakeLists.txt"), 'OPTION(PA_USE_WDMKS_DEVICE_INFO "Use WDM/KS API for device info" ON)', 'OPTION(PA_USE_WDMKS_DEVICE_INFO "Use WDM/KS API for device info" OFF)')
             replace_in_file(os.path.join(self.sources_folder, "CMakeLists.txt"), 'OPTION(PA_USE_WASAPI "Enable support for WASAPI" ON)', 'OPTION(PA_USE_WASAPI "Enable support for WASAPI" OFF)')
-        
+
 
     def build(self):
         self.patch_source()
-        
+
         if self.settings.os == "Linux" or self.settings.os == "Macos":
             env = AutoToolsBuildEnvironment(self)
             with tools.environment_append(env.vars):
                 env.fpic = self.options.fPIC
                 with tools.environment_append(env.vars):
-                    command = './configure && make'
+                    command = ''
+                    if self.settings.os == "Macos" and self.settings.compiler == "apple-clang":
+                        command = './configure --disable-mac-universal && make'
+                    else:
+                        command = './configure && make'
                     self.run("cd %s && %s" % (self.sources_folder, command))
             if self.settings.os == "Macos" and self.options.shared:
                 self.run('cd %s/lib/.libs && for filename in *.dylib; do install_name_tool -id $filename $filename; done' % self.sources_folder)
@@ -99,7 +106,7 @@ elif xcodebuild -version -sdk macosx10.13 Path >/dev/null 2>&1 ; then
         self.copy("FindPortaudio.cmake", ".", ".")
         self.copy("*.h", dst="include", src=os.path.join(self.sources_folder, "include"))
         self.copy(pattern="LICENSE*", dst="licenses", src=self.sources_folder,  ignore_case=True, keep_path=False)
-        
+
         if self.settings.os == "Windows":
             if self.settings.compiler == "Visual Studio":
                 self.copy(pattern="*.lib", dst="lib", keep_path=False)
@@ -112,7 +119,7 @@ elif xcodebuild -version -sdk macosx10.13 Path >/dev/null 2>&1 ; then
                     self.copy(pattern="*.dll", dst="bin", keep_path=False)
                 else:
                     self.copy(pattern="*static.a", dst="lib", keep_path=False)
-                
+
         else:
             if self.options.shared:
                 if self.settings.os == "Macos":
@@ -128,10 +135,10 @@ elif xcodebuild -version -sdk macosx10.13 Path >/dev/null 2>&1 ; then
         if self.settings.os == "Windows":
             if not self.options.shared:
                 base_name += "_static"
-                
+
             if self.settings.compiler == "Visual Studio":
                 base_name += "_x86" if self.settings.arch == "x86" else "_x64"
-            
+
         elif self.settings.os == "Macos":
             self.cpp_info.exelinkflags.append("-framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework CoreServices -framework Carbon")
 
