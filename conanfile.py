@@ -92,6 +92,7 @@ elif xcodebuild -version -sdk macosx10.13 Path >/dev/null 2>&1 ; then
                 self.run('cd %s/lib/.libs && for filename in *.dylib; do install_name_tool -id $filename $filename; done' % self.sources_folder)
         else:
             cmake = CMake(self)
+            cmake.definitions["MSVS"] = self.settings.compiler == "Visual Studio"
             cmake.configure()
             cmake.build()
 
