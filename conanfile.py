@@ -12,7 +12,7 @@ class ConanRecipe(ConanFile):
     url = "https://github.com/jgsogo/conan-portaudio"
     license = "http://www.portaudio.com/license.html"
     options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = "shared=False", "fPIC=True"
+    default_options = {'shared': False, 'fPIC': True}
     exports = ["FindPortaudio.cmake", "CMakeLists.txt"]
 
     def configure(self):

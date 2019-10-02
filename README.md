@@ -1,5 +1,5 @@
 [ ![Download](https://api.bintray.com/packages/bincrafters/public-conan/portaudio%3Abincrafters/images/download.svg) ](https://bintray.com/bincrafters/public-conan/portaudio%3Abincrafters/_latestVersion)
-[![Build Status](https://travis-ci.org/bincrafters/conan-portaudio.svg?branch=stable%2Fv190600.20161030)](https://travis-ci.org/bincrafters/conan-portaudio)
+[![Build Status](https://travis-ci.com/bincrafters/conan-portaudio.svg?branch=stable%2Fv190600.20161030)](https://travis-ci.com/bincrafters/conan-portaudio)
 [![Build status](https://ci.appveyor.com/api/projects/status/sxs9n6vb8nqa92l5?svg=true)](https://ci.appveyor.com/project/BinCrafters/conan-portaudio)
 
 [Conan.io](https://conan.io) package for [portaudio](http://www.portaudio.com/) project
