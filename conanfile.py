@@ -17,6 +17,7 @@ class ConanRecipe(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
+        del self.settings.compiler.cppstd
         if self.settings.os == "Windows":
             self.options.remove("fPIC")
 
