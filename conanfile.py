@@ -92,11 +92,11 @@ elif xcodebuild -version -sdk macosx10.15 Path >/dev/null 2>&1 ; then
             with tools.environment_append(env.vars):
                 env.fpic = self.options.fPIC
                 with tools.environment_append(env.vars):
-                    command = ''
-                    if self.settings.os == "Macos" and self.settings.compiler == "apple-clang":
-                        command = './configure --disable-mac-universal && make'
-                    else:
-                        command = './configure && make'
+                    command = './configure'
+                    self.run("cd %s && %s" % (self.sources_folder, command))
+                    if self.settings.os == "Macos":
+                        replace_in_file(os.path.join(self.sources_folder, "Makefile"), '-arch i386', '')
+                    command = 'make'
                     self.run("cd %s && %s" % (self.sources_folder, command))
             if self.settings.os == "Macos" and self.options.shared:
                 self.run('cd %s/lib/.libs && for filename in *.dylib; do install_name_tool -id $filename $filename; done' % self.sources_folder)
