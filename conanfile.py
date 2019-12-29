@@ -72,10 +72,12 @@ elif xcodebuild -version -sdk macosx10.13 Path >/dev/null 2>&1 ; then
 elif xcodebuild -version -sdk macosx10.14 Path >/dev/null 2>&1 ; then
                  mac_version_min="-mmacosx-version-min=10.4"
                  mac_sysroot="-isysroot `xcodebuild -version -sdk macosx10.14 Path`"
-
+elif xcodebuild -version -sdk macosx10.15 Path >/dev/null 2>&1 ; then
+                 mac_version_min="-mmacosx-version-min=10.4"
+                 mac_sysroot="-isysroot `xcodebuild -version -sdk macosx10.15 Path`"
 """
                         )
-            replace_in_file(os.path.join(self.sources_folder, "configure"), "Could not find 10.5 to 10.12 SDK.", "Could not find 10.5 to 10.14 SDK.")
+            replace_in_file(os.path.join(self.sources_folder, "configure"), "Could not find 10.5 to 10.12 SDK.", "Could not find 10.5 to 10.15 SDK.")
         elif self.settings.os == "Windows" and self.settings.compiler == "gcc":
             replace_in_file(os.path.join(self.sources_folder, "CMakeLists.txt"), 'OPTION(PA_USE_WDMKS "Enable support for WDMKS" ON)', 'OPTION(PA_USE_WDMKS "Enable support for WDMKS" OFF)')
             replace_in_file(os.path.join(self.sources_folder, "CMakeLists.txt"), 'OPTION(PA_USE_WDMKS_DEVICE_INFO "Use WDM/KS API for device info" ON)', 'OPTION(PA_USE_WDMKS_DEVICE_INFO "Use WDM/KS API for device info" OFF)')
